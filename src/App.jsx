@@ -3,19 +3,19 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 import MovieList from './Domain/MovieList'
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'; // Updated import here
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 const movies = [
   {
     id: 1,
-    title: "Movie 1",
-    genre: "Action",
-    year_of_release: 2020,
-    trailer_link: "https://www.example.com/trailer1",
-    photo: "https://www.example.com/photo1.jpg"
+    title: "The Shawshank Redemption",
+    genre: "Drama",
+    year_of_release: 1994,
+    trailer_link: "https://www.youtube.com/watch?v=NmzuHjWmXOc&ab_channel=RottenTomatoesClassicTrailers",
+    photo: "/Photos/ShawshankRedemption.jpg"
   },
   {
-    id: 2,
+    id: 2,  
     title: "Movie 2",
     genre: "Comedy",
     year_of_release: 2019,
