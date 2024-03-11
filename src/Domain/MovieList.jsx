@@ -1,5 +1,5 @@
 import React from "react";
-import { Movie, TitleOnlyMovie } from "./Movie";
+import { Movie } from "./Movie";
 
 
 const MovieList = ({movies}) =>{
@@ -7,7 +7,7 @@ const MovieList = ({movies}) =>{
         <div>
             <h1>Movie List</h1>
             {movies.map(movie => (
-                <TitleOnlyMovie key = {movie.id} movie={movie}/>
+                <Movie key = {movie.id} movie={movie}/>
             ))}
         </div>
     );
