@@ -1,15 +1,22 @@
-import React from "react";
+import React, {useState} from "react";
 import { Movie } from "./Movie";
+import { MovieData } from "./MovieData";
 
 
-const MovieList = ({movies}) =>{
+const MovieList = () =>{
+
+    const [movies, setMovies] = useState(MovieData);
+
+    const handleDelete = (id) => {
+        setMovies(movies.filter(movie => movie.id !== id));
+    };
+
     return (
-        <div>
-            <h1>Movie List</h1>
+        <tbody>
             {movies.map(movie => (
-                <Movie key = {movie.id} movie={movie}/>
+                <Movie key = {movie.id} movie={movie} handleDelete={handleDelete}/>
             ))}
-        </div>
+        </tbody>
     );
 };
 

@@ -8,7 +8,7 @@ const MovieDetail = ({ movies }) => {
   if (!movie) {
     return <div>Movie not found</div>;
   }
-
+  
   const { title, genre, year_of_release, trailer_link, photo } = movie;
   const youtubeId = new URL(trailer_link).searchParams.get('v');
 
