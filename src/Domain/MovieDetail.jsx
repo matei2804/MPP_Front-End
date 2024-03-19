@@ -1,9 +1,10 @@
 import React from "react";
 import { useParams } from "react-router-dom";
+import { MovieData } from "./MovieData";
 
-const MovieDetail = ({ movies }) => {
+const MovieDetail = () => {
   const { movieId } = useParams();
-  const movie = movies.find((m) => m.id === parseInt(movieId));
+  const movie = MovieData.find((m) => m.id === movieId);
 
   if (!movie) {
     return <div>Movie not found</div>;

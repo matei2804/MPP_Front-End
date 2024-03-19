@@ -1,51 +1,56 @@
-import React, { useState, useId } from "react";
+import React, { useState, useEffect } from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { MovieData } from "./MovieData";
 import { useNavigate } from "react-router-dom";
 import {Form, Button} from "react-bootstrap"
 
-
-function Add() {
+function Update(){
 
     const [title, setTitle] = useState("");
     const [genre, setGenre] = useState("");
     const [year_of_release, setYear] = useState("");
     const [trailer_link, setTrailer] = useState("");
     const [photo, setPhoto] = useState("");
- 
+    const [id, setId] = useState("");
 
     let history = useNavigate();
 
+    let index = MovieData
+		.map(function (e) {
+			return e.id;
+		})
+		.indexOf(id);
+    
     const handleSubmit = (e) => {
-        e.preventDefault();
+		e.preventDefault();
+		if (title == "" || genre == "" || year_of_release == "" || photo == "" || trailer_link == "")  {
+			alert("invalid input");
+			return;
+		}
+
+		let m = MovieData[index];
+
+		m.title = title;
+        m.genre = genre;
+        m.photo = photo;
+        m.year_of_release = year_of_release;
+        m.trailer_link = trailer_link;
+	
+		history("/");
+	};
+
+    useEffect(() => {
+       
+        setTitle(localStorage.getItem("Title"));
+        setGenre(localStorage.getItem("Genre"));
+        setYear(localStorage.getItem("Year of realease"));
+        setTrailer(localStorage.getItem("Trailer Link"));
+        setPhoto(localStorage.getItem("Photo"));
+        setId(localStorage.getItem("id"));
         
-        let id = Date.now().toString();
-
-
-        let t = title,
-            g = genre,
-            y = year_of_release,
-            t_l = trailer_link,
-            p = photo;
-        
-        if(t == "" || g == "" || y == "" || t_l == "" || p == "")
-        {
-            alert("INVALID INPUT!");
-            return;
-        }
-        MovieData.push(
-            {
-                id: id,
-                title: t,
-                genre: g,
-                year_of_release: y,
-                trailer_link: t_l,
-                photo: p
-            }
-        );
-
-        history('/');
-    }
+    }, []);
+    
+    
 
     return (
         <div>
@@ -100,12 +105,13 @@ function Add() {
 					variant="primary"
 					type="submit"
 				>
-					Submit
+					Update
 				</Button>
 
             </Form>
         </div>
     )
+
 }
 
-export default Add;
+export default Update;
