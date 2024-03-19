@@ -3,7 +3,7 @@ export const MovieData = [
       id: "1",
       title: "The Shawshank Redemption",
       genre: "Drama",
-      year_of_release: "1994",
+      year_of_release: 1994,
       trailer_link: "https://www.youtube.com/watch?v=NmzuHjWmXOc&ab_channel=RottenTomatoesClassicTrailers",
       photo: "https://m.media-amazon.com/images/M/MV5BNDE3ODcxYzMtY2YzZC00NmNlLWJiNDMtZDViZWM2MzIxZDYwXkEyXkFqcGdeQXVyNjAwNDUxODI@._V1_.jpg"
     },
