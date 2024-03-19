@@ -32,6 +32,7 @@ function Home() {
     const sortMovies = () => {
         const sorted = [...movies].sort((a, b) => a.year_of_release - b.year_of_release);
         setMovies(sorted);
+
     };
 
     return (

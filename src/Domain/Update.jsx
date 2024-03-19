@@ -58,7 +58,7 @@ function Update(){
                 <Form.Group className="mb-3" controlId="formTitle">
                     <Form.Control
                         type="text"
-                        placeholder="Enter Title"
+                        value={title}
                         required
                         onChange={(e) => setTitle(e.target.value)}
                     />
@@ -67,7 +67,7 @@ function Update(){
                 <Form.Group className="mb-3" controlId="formGenre">
                     <Form.Control
                         type="text"
-                        placeholder="Enter Genre"
+                        value={genre}
                         required
                         onChange={(e) => setGenre(e.target.value)}
                     />
@@ -76,7 +76,7 @@ function Update(){
                 <Form.Group className="mb-3" controlId="formYearOfRelease">
                     <Form.Control
                         type="text"
-                        placeholder="Enter Year of Release"
+                        value={year_of_release}
                         required
                         onChange={(e) => setYear(e.target.value)}
                     />
@@ -85,7 +85,7 @@ function Update(){
                 <Form.Group className="mb-3" controlId="formTrailerLink">
                     <Form.Control
                         type="text"
-                        placeholder="Enter Trailer Link"
+                        value={trailer_link}
                         required
                         onChange={(e) => setTrailer(e.target.value)}
                     />
@@ -94,7 +94,7 @@ function Update(){
                 <Form.Group className="mb-3" controlId="formPhoto">
                     <Form.Control
                         type="text"
-                        placeholder="Enter Photo URL"
+                        value={photo}
                         required
                         onChange={(e) => setPhoto(e.target.value)}
                     />
