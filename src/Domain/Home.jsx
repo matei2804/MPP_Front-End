@@ -3,6 +3,8 @@ import { MovieData } from "./MovieData";
 import './Home.css';
 import { Link, useNavigate } from "react-router-dom";
 import Button from 'react-bootstrap/Button';
+import YearChart from "./YearChart";
+
 
 function Home() {
     let history = useNavigate();
@@ -12,7 +14,7 @@ function Home() {
         localStorage.setItem("id", id);
         localStorage.setItem("Title", title);
         localStorage.setItem("Genre", genre);
-        localStorage.setItem("Year of release", year_of_release);
+        localStorage.setItem("Year of release", year_of_release);1
         localStorage.setItem("Trailer Link", trailer_link);
         localStorage.setItem("Photo", photo);
     }
@@ -70,7 +72,11 @@ function Home() {
             <Button onClick={sortMovies} variant="primary">
                 Sort
             </Button>
-        </div>
+            <br/><br/><br/>
+            <div>
+                <YearChart />
+            </div>
+        </div> 
     );
 }
 
