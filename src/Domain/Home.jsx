@@ -10,11 +10,26 @@ function Home() {
     let history = useNavigate();
     const [movies, setMovies] = useState([]);
 
+    const [currentPage, setCurrentPage] = useState(1);
+    const [moviesPerPage, setMoviesPerPage] = useState(5);
+
+    const indexOfLastMovie = currentPage * moviesPerPage;
+    const indexOfFirstMovie = indexOfLastMovie - moviesPerPage;
+    const currentMovies = movies.slice(indexOfFirstMovie, indexOfLastMovie);
+
+    const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+    const pageNumbers = [];
+    for (let i = 1; i <= Math.ceil(movies.length / moviesPerPage); i++) {
+        pageNumbers.push(i);
+    }
+
+
     function setID(id, title, genre, year_of_release, trailer_link, photo) {
         localStorage.setItem("id", id);
         localStorage.setItem("Title", title);
         localStorage.setItem("Genre", genre);
-        localStorage.setItem("Year of release", year_of_release);1
+        localStorage.setItem("Year of release", year_of_release);
         localStorage.setItem("Trailer Link", trailer_link);
         localStorage.setItem("Photo", photo);
     }
@@ -39,12 +54,22 @@ function Home() {
 
     return (
         <div>
+        <nav>
+            <ul className='pagination'>
+                {pageNumbers.map(number => (
+                <li key={number} className='page-item'>
+                    <button onClick={() => paginate(number)} className='page-link'>
+                        {number}
+                    </button>
+            </li>))}
+            </ul>
+            </nav>
             <h1>Movie List</h1>
             <br/><br/><br/>
             <div>
                 <table className="left-aligned-table">
                     <tbody>
-                        {movies.map((item) => (
+                        {currentMovies.map((item) => (
                             <tr key={item.id}>
                                 <td><Link to={`/movie/${item.id}`}>{item.title}</Link></td>
                                 <td>
