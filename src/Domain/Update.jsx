@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { MovieData } from "./MovieData";
 import { useNavigate } from "react-router-dom";
 import {Form, Button} from "react-bootstrap"
+import { useParams } from "react-router-dom";
+
 
 function Update(){
 
@@ -11,45 +12,56 @@ function Update(){
     const [year_of_release, setYear] = useState("");
     const [trailer_link, setTrailer] = useState("");
     const [photo, setPhoto] = useState("");
-    const [id, setId] = useState("");
-
-    let history = useNavigate();
-
-    let index = MovieData
-		.map(function (e) {
-			return e.id;
-		})
-		.indexOf(id);
-    
-    const handleSubmit = (e) => {
-		e.preventDefault();
-		if (title == "" || genre == "" || year_of_release == "" || photo == "" || trailer_link == "")  {
-			alert("invalid input");
-			return;
-		}
-
-		let m = MovieData[index];
-
-		m.title = title;
-        m.genre = genre;
-        m.photo = photo;
-        m.year_of_release = year_of_release;
-        m.trailer_link = trailer_link;
-	
-		history("/");
-	};
+    const { movieId } = useParams(); 
+    let navigate = useNavigate();
 
     useEffect(() => {
-       
-        setTitle(localStorage.getItem("Title"));
-        setGenre(localStorage.getItem("Genre"));
-        setYear(localStorage.getItem("Year of realease"));
-        setTrailer(localStorage.getItem("Trailer Link"));
-        setPhoto(localStorage.getItem("Photo"));
-        setId(localStorage.getItem("id"));
         
-    }, []);
+        const fetchMovieDetails = async () => {
+            try {
+                const response = await fetch(`http://localhost:8080/movie?id=${movieId}`);
+                if (!response.ok) throw new Error('Failed to fetch movie details');
+                const data = await response.json();
+                setTitle(data.title);
+                setGenre(data.genre);
+                setYear(data.year_of_release);
+                setTrailer(data.trailer_link);
+                setPhoto(data.photo);
+            } catch (error) {
+                console.error("Error:", error);
+                alert("Failed to load movie details");
+            }
+        };
     
+        fetchMovieDetails();
+    }, [movieId]);
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const updatedMovie = {
+            title,
+            genre,
+            year_of_release,
+            trailer_link,
+            photo,
+        };
+
+        try {
+            const response = await fetch(`http://localhost:8080/movie/${movieId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(updatedMovie),
+            });
+
+            if (!response.ok) throw new Error(`Error: ${response.status}`);
+            navigate("/");
+        } catch (error) {
+            console.error('Failed to update the movie:', error);
+            alert("Failed to update the movie");
+        }
+    };
     
 
     return (

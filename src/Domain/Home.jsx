@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { MovieData } from "./MovieData";
 import './Home.css';
 import { Link, useNavigate } from "react-router-dom";
 import Button from 'react-bootstrap/Button';
@@ -35,15 +34,27 @@ function Home() {
     }
 
     function deleted(id) {
-        let index = movies.findIndex((e) => e.id === id);
-        let newMovies = [...movies];
-        newMovies.splice(index, 1);
-        setMovies(newMovies);
-        history("/");
+        fetch(`http://localhost:8080/movie/${id}`, {
+            method: 'DELETE',
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Error: ${response.statusText}`);
+            }
+            setMovies(movies.filter((movie) => movie.id !== id));
+        })
+        .catch(error => {
+            console.error('Error deleting the movie:', error);
+            alert("Failed to delete the movie");
+        });
     }
+    
 
     useEffect(() => {
-        setMovies([...MovieData]);
+        fetch('http://localhost:8080/movieList')
+            .then(response => response.json())
+            .then(data => setMovies(data))
+            .catch(error => console.error('Error fetching data: ', error));
     }, []);
 
     const sortMovies = () => {
@@ -73,7 +84,7 @@ function Home() {
                             <tr key={item.id}>
                                 <td><Link to={`/movie/${item.id}`}>{item.title}</Link></td>
                                 <td>
-                                    <Link to={`/update`}>
+                                    <Link to={`/update/${item.id}`}>
                                         <Button onClick={() => setID(item.id, item.title, item.genre, item.year_of_release, item.trailer_link, item.photo)} variant="info">
                                             Update
                                         </Button>

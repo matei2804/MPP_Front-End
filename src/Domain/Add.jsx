@@ -16,37 +16,51 @@ function Add() {
 
     let history = useNavigate();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        
-        let id = Date.now().toString();
 
+        const id_date = Date.now().toString();
 
-        let t = title,
-            g = genre,
-            y = year_of_release,
-            t_l = trailer_link,
-            p = photo;
         
-        if(t == "" || g == "" || y == "" || t_l == "" || p == "")
-        {
+        const movie = {
+            id: id_date,
+            title: title,
+            genre: genre,
+            year_of_release: year_of_release, 
+            trailer_link: trailer_link,       
+            photo: photo
+        };
+        
+        if (!title || !genre || !year_of_release || !trailer_link || !photo) {
             alert("INVALID INPUT!");
             return;
         }
-        MovieData.push(
-            {
-                id: id,
-                title: t,
-                genre: g,
-                year_of_release: y,
-                trailer_link: t_l,
-                photo: p
+    
+        try {
+            const response = await fetch('http://localhost:8080/movie', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(movie),
+            });
+    
+            if (!response.ok) {
+                throw new Error(`Error: ${response.status}`);
             }
-        );
 
-        history('/');
+            setTitle("");
+            setGenre("");
+            setYear("");
+            setTrailer("");
+            setPhoto("");
+            history('/');
+        } catch (error) {
+            console.error('Failed to add the movie:', error);
+            alert("Failed to add the movie");
+        }
     }
-
+    
     return (
         <div>
              <Form className="d-grid gap-2" style={{ margin: "15rem" }}>
