@@ -56,7 +56,6 @@ function Add() {
             setPhoto("");
             history('/');
         } catch (error) {
-            console.error('Failed to add the movie:', error);
             alert("Failed to add the movie");
         }
     }

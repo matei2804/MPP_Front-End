@@ -1,97 +1,71 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import './Home.css';
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Button from 'react-bootstrap/Button';
 import YearChart from "./YearChart";
-
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchMovieList, deleteMovie } from "../redux/movieSlicer";
 
 function Home() {
-    let history = useNavigate();
-    const [movies, setMovies] = useState([]);
-
     const [currentPage, setCurrentPage] = useState(1);
     const [moviesPerPage, setMoviesPerPage] = useState(5);
+    const [sortOrder, setSortOrder] = useState('asc');
 
-    const indexOfLastMovie = currentPage * moviesPerPage;
-    const indexOfFirstMovie = indexOfLastMovie - moviesPerPage;
-    const currentMovies = movies.slice(indexOfFirstMovie, indexOfLastMovie);
+    const dispatch = useDispatch();
+    const { data: movies, isLoading, error } = useSelector(state => state.movieStore);
 
-    const paginate = (pageNumber) => setCurrentPage(pageNumber);
+    useEffect(() => {
+        if (!movies) {
+            dispatch(fetchMovieList());
+        }
+    }, [dispatch, movies]);
+
+    const toggleSortOrder = () => {
+        setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    };
+
+    const sortedAndPagedMovies = useMemo(() => {
+        if (!movies) return [];
+        const sortedMovies = [...movies].sort((a, b) => sortOrder === 'asc' ? a.yearOfRelease - b.yearOfRelease : b.yearOfRelease - a.yearOfRelease );
+        return sortedMovies.slice((currentPage - 1) * moviesPerPage, currentPage * moviesPerPage);
+    }, [movies, sortOrder, currentPage, moviesPerPage]);
 
     const pageNumbers = [];
-    for (let i = 1; i <= Math.ceil(movies.length / moviesPerPage); i++) {
+    for (let i = 1; i <= Math.ceil((movies?.length || 0) / moviesPerPage); i++) {
         pageNumbers.push(i);
     }
 
-
-    function setID(id, title, genre, year_of_release, trailer_link, photo) {
-        localStorage.setItem("id", id);
-        localStorage.setItem("Title", title);
-        localStorage.setItem("Genre", genre);
-        localStorage.setItem("Year of release", year_of_release);
-        localStorage.setItem("Trailer Link", trailer_link);
-        localStorage.setItem("Photo", photo);
-    }
-
-    function deleted(id) {
-        fetch(`http://localhost:8080/movie/${id}`, {
-            method: 'DELETE',
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`Error: ${response.statusText}`);
-            }
-            setMovies(movies.filter((movie) => movie.id !== id));
-        })
-        .catch(error => {
-            console.error('Error deleting the movie:', error);
-            alert("Failed to delete the movie");
-        });
-    }
-    
-
-    useEffect(() => {
-        fetch('http://localhost:8080/movieList')
-            .then(response => response.json())
-            .then(data => setMovies(data))
-            .catch(error => console.error('Error fetching data: ', error));
-    }, []);
-
-    const sortMovies = () => {
-        const sorted = [...movies].sort((a, b) => a.year_of_release - b.year_of_release);
-        setMovies(sorted);
-
+    const handleDelete = (id) => {
+        dispatch(deleteMovie(id));
     };
 
     return (
         <div>
-        <nav>
-            <ul className='pagination'>
-                {pageNumbers.map(number => (
-                <li key={number} className='page-item'>
-                    <button onClick={() => paginate(number)} className='page-link'>
-                        {number}
-                    </button>
-            </li>))}
-            </ul>
+            <nav>
+                <ul className='pagination'>
+                    {pageNumbers.map(number => (
+                        <li key={number} className='page-item'>
+                            <button onClick={() => setCurrentPage(number)} className='page-link'>
+                                {number}
+                            </button>
+                        </li>
+                    ))}
+                </ul>
             </nav>
             <h1>Movie List</h1>
-            <br/><br/><br/>
             <div>
                 <table className="left-aligned-table">
                     <tbody>
-                        {currentMovies.map((item) => (
-                            <tr key={item.id}>
-                                <td><Link to={`/movie/${item.id}`}>{item.title}</Link></td>
+                        {sortedAndPagedMovies.map((movie) => (
+                            <tr key={movie.id}>
+                                <td><Link to={`/movie/${movie.id}`}>{movie.title}</Link></td>
                                 <td>
-                                    <Link to={`/update/${item.id}`}>
-                                        <Button onClick={() => setID(item.id, item.title, item.genre, item.year_of_release, item.trailer_link, item.photo)} variant="info">
-                                            Update
-                                        </Button>
+                                    <Link to={`/update/${movie.id}`}>
+                                        <Button variant="info">Update</Button>
                                     </Link>
                                 </td>
                                 <td>
-                                    <Button onClick={() => deleted(item.id)} variant="danger">
+                                    <Button onClick={() => handleDelete(movie.id)} variant="danger">
                                         Delete
                                     </Button>
                                 </td>
@@ -100,18 +74,11 @@ function Home() {
                     </tbody>
                 </table>
             </div>
-            <br/>
             <Link to="/create">
                 <button style={{ fontSize: '24px' }}>Create</button>
             </Link>
-            <br/><br/>
-            <Button onClick={sortMovies} variant="primary">
-                Sort
-            </Button>
-            <br/><br/><br/>
-            <div>
-                <YearChart />
-            </div>
+            <Button onClick={toggleSortOrder} variant="primary">Sort</Button>
+            <YearChart />
         </div> 
     );
 }
