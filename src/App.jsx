@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './App.css'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { Home } from './Domain/Home';
@@ -8,10 +8,20 @@ import Update from './Domain/Update';
 import { Provider } from 'react-redux';
 import { store } from './redux/store';
 import ConnectivityListener from './connectivityListener';
+import webSocketService from './webSocketService';
+
 
 
 function App() {
   
+  useEffect(() => {
+    webSocketService.connect();
+
+    return () => {
+      webSocketService.disconnect();
+    };
+  }, []);
+
   return (
     <Provider store={store}>
       <Router>

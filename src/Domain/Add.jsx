@@ -3,6 +3,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { MovieData } from "./MovieData";
 import { useNavigate } from "react-router-dom";
 import {Form, Button} from "react-bootstrap"
+import { fetchMovieList } from "../redux/movieSlicer";
+import { useDispatch } from "react-redux";
 
 
 function Add() {
@@ -12,8 +14,10 @@ function Add() {
     const [year_of_release, setYear] = useState("");
     const [trailer_link, setTrailer] = useState("");
     const [photo, setPhoto] = useState("");
+    const [userID, setUserID] = useState("");
  
 
+    const dispatch = useDispatch();
     let history = useNavigate();
 
     const handleSubmit = async (e) => {
@@ -26,12 +30,13 @@ function Add() {
             id: id_date,
             title: title,
             genre: genre,
-            year_of_release: year_of_release, 
-            trailer_link: trailer_link,       
-            photo: photo
+            yearOfRelease: year_of_release, 
+            trailerLink: trailer_link,       
+            photo: photo,
+            userID: userID 
         };
         
-        if (!title || !genre || !year_of_release || !trailer_link || !photo) {
+        if (!title || !genre || !year_of_release || !trailer_link || !photo || !userID) {
             alert("INVALID INPUT!");
             return;
         }
@@ -54,8 +59,13 @@ function Add() {
             setYear("");
             setTrailer("");
             setPhoto("");
+            setUserID("");
+            
+            dispatch(fetchMovieList());
+
             history('/');
         } catch (error) {
+            console.log(error);
             alert("Failed to add the movie");
         }
     }
@@ -107,6 +117,16 @@ function Add() {
                         onChange={(e) => setPhoto(e.target.value)}
                     />
                 </Form.Group>
+
+                <Form.Group className="mb-3" controlId="formUserID">
+                    <Form.Control
+                        type="text"
+                        placeholder="Enter User ID"
+                        required
+                        onChange={(e) => setUserID(e.target.value)}
+                    />
+                </Form.Group>
+                
 
                 <Button
 					onClick={(e) => handleSubmit(e)}

@@ -9,7 +9,7 @@ export const fetchMovieList = createAsyncThunk("fetchMovieList", async() => {
     } catch (error) {
         alert('Server is down!');
         return rejectWithValue('Cannot connect to the server. Please try again later.');
-    }
+    }   
 })
 
 export const deleteMovie = createAsyncThunk('movie/deleteMovie', async (movieId, { rejectWithValue }) => {
@@ -60,6 +60,11 @@ const movieSlice = createSlice({
         movie: null,
         error: false
     },
+    reducers: {
+        addMovie(state, action) {
+            state.data.push(action.payload);
+        }
+    },
     extraReducers: (builder) => {
         builder.addCase(fetchMovieList.pending, (state, action) => {
             state.isLoading = true;
@@ -95,4 +100,5 @@ const movieSlice = createSlice({
     }
 })
 
+export const { addMovie } = movieSlice.actions;
 export default movieSlice.reducer;

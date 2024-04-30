@@ -15,6 +15,7 @@ function Update(){
     const [yearOfRelease, setYear] = useState("");
     const [trailerLink, setTrailer] = useState("");
     const [photo, setPhoto] = useState("");
+    const [userID, setUserID] = useState("");
     const { movieId } = useParams(); 
     let navigate = useNavigate();
 
@@ -33,6 +34,7 @@ function Update(){
             setYear(movie.yearOfRelease);
             setTrailer(movie.trailerLink);
             setPhoto(movie.photo);
+            setUserID(movie.userID);
         }
     }, [movie]);
     
@@ -44,6 +46,7 @@ function Update(){
             yearOfRelease,
             trailerLink,
             photo,
+            userID,
         };
         
         dispatch(updateMovie({ movieId, updatedMovie }))
@@ -102,6 +105,15 @@ function Update(){
                         value={photo}
                         required
                         onChange={(e) => setPhoto(e.target.value)}
+                    />
+                </Form.Group>
+
+                <Form.Group className="mb-3" controlId="formUserID">
+                    <Form.Control
+                        type="text"
+                        value={userID}
+                        required
+                        onChange={(e) => setUserID(e.target.value)}
                     />
                 </Form.Group>
 
