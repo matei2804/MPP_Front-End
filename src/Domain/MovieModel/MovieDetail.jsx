@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchMovieDetails, updateMovie } from '../redux/movieSlicer';
+import { fetchMovieDetails, updateMovie } from '../../redux/movieSlicer';
 
 const MovieDetail = () => {
   const { movieId } = useParams();

@@ -2,14 +2,18 @@ import React, { useEffect, useState, useMemo } from "react";
 import './Home.css';
 import { Link } from "react-router-dom";
 import Button from 'react-bootstrap/Button';
-import YearChart from "./YearChart";
+import YearChart from '../Domain/MovieModel/YearChart'
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchMovieList, deleteMovie } from "../redux/movieSlicer";
+import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 function Home() {
     const [currentPage, setCurrentPage] = useState(1);
     const [moviesPerPage, setMoviesPerPage] = useState(5);
     const [sortOrder, setSortOrder] = useState('asc');
+    const [username, setUsername] = useState('-');
+    let navigate = useNavigate();
 
     const dispatch = useDispatch();
     const { data: movies, isLoading, error } = useSelector(state => state.movieStore);
@@ -18,6 +22,18 @@ function Home() {
         if (!movies) {
             dispatch(fetchMovieList());
         }
+        
+        const token = localStorage.getItem('jwtToken');
+        if (token) {
+            try {
+                const decoded = jwtDecode(token);
+                setUsername(decoded.name);
+
+            } catch (error) {
+                console.error("Failed to decode the token:", error);
+            }
+        }
+
     }, [dispatch, movies]);
 
     const toggleSortOrder = () => {
@@ -39,6 +55,11 @@ function Home() {
         dispatch(deleteMovie(id));
     };
 
+    const handleSignOut = () => {
+        localStorage.removeItem('jwtToken');  
+        navigate('/');
+    };
+
     return (
         <div>
             <nav>
@@ -52,7 +73,14 @@ function Home() {
                     ))}
                 </ul>
             </nav>
-            <h1>Movie List</h1>
+            <div className="login-buttons">
+                <Link to="/">
+                        <button className="" style={{ fontSize: '24px' }}>Login page</button>
+                </Link>
+                <Button className="" onClick={handleSignOut} variant="primary">Sign out</Button>
+            </div>
+            <h1>Movie List</h1><br></br>
+            <p><b>Welcome, {username}!</b></p> 
             <div>
                 <table className="left-aligned-table">
                     <tbody>
@@ -74,10 +102,15 @@ function Home() {
                     </tbody>
                 </table>
             </div>
-            <Link to="/create">
-                <button style={{ fontSize: '24px' }}>Create</button>
-            </Link>
-            <Button onClick={toggleSortOrder} variant="primary">Sort</Button>
+            <div className="home-buttons">
+                <Link to="/create">
+                    <button className="home-page-button" style={{ fontSize: '24px' }}>Create</button>
+                </Link>
+                <Button className="home-page-button" onClick={toggleSortOrder} variant="primary">Sort</Button>
+                <Link to="/userPage">
+                    <button className="home-page-button" style={{ fontSize: '24px' }}>User page</button>
+                </Link>
+            </div>
             <YearChart />
         </div> 
     );

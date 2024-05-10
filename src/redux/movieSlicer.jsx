@@ -1,22 +1,34 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
-export const fetchMovieList = createAsyncThunk("fetchMovieList", async() => {
+const getToken = () => localStorage.getItem('jwtToken');
 
+export const fetchMovieList = createAsyncThunk('fetchMovieList', async (_, { rejectWithValue }) => {
+    const token = getToken(); 
     try {
-        const response = await fetch('http://localhost:8080/movieList');
+        const response = await fetch('http://localhost:8080/movieList', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
         if (!response.ok) throw new Error('Server is not responding');
         return await response.json();
     } catch (error) {
         alert('Server is down!');
         return rejectWithValue('Cannot connect to the server. Please try again later.');
-    }   
-})
+    }
+});
 
 export const deleteMovie = createAsyncThunk('movie/deleteMovie', async (movieId, { rejectWithValue }) => {
+    const token = getToken();
     try {
-        const response = await fetch(`http://localhost:8080/movie/${movieId}`, { method: 'DELETE' });
+        const response = await fetch(`http://localhost:8080/movie/${movieId}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
         if (!response.ok) throw new Error('Server is not responding');
-        return movieId; 
+        return movieId;
     } catch (error) {
         alert('Server is down!');
         return rejectWithValue('Cannot connect to the server. Please try again later.');
@@ -24,23 +36,29 @@ export const deleteMovie = createAsyncThunk('movie/deleteMovie', async (movieId,
 });
 
 export const fetchMovieDetails = createAsyncThunk('fetchMovieDetails', async (movieId, { rejectWithValue }) => {
+    const token = getToken();
     try {
-        const response = await fetch(`http://localhost:8080/movie?id=${movieId}`);
+        const response = await fetch(`http://localhost:8080/movie?id=${movieId}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
         if (!response.ok) throw new Error('Server is not responding');
-        return await response.json(); 
+        return await response.json();
     } catch (error) {
         alert('Server is down!');
         return rejectWithValue(error.message);
     }
 });
 
-
 export const updateMovie = createAsyncThunk('movie/updateMovie', async ({ movieId, updatedMovie }, { rejectWithValue }) => {
+    const token = getToken();
     try {
         const response = await fetch(`http://localhost:8080/movie/${movieId}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify(updatedMovie)
         });
@@ -51,9 +69,8 @@ export const updateMovie = createAsyncThunk('movie/updateMovie', async ({ movieI
     }
 });
 
-
 const movieSlice = createSlice({
-    name: 'movieS',
+    name: 'movies',
     initialState: {
         isLoading: false,
         data: null,
@@ -66,39 +83,39 @@ const movieSlice = createSlice({
         }
     },
     extraReducers: (builder) => {
-        builder.addCase(fetchMovieList.pending, (state, action) => {
-            state.isLoading = true;
-        });
-        builder.addCase(fetchMovieList.fulfilled, (state, action) => {
-            state.isLoading = false;
-            state.data = action.payload;
-        });
-        builder.addCase(fetchMovieList.rejected, (state, action) => {
-            state.error = true;
-        });
-        builder.addCase(deleteMovie.fulfilled, (state, action) => {
-            state.data = state.data.filter(movie => movie.id !== action.payload);
-        });
-        builder.addCase(updateMovie.pending, (state) => {
-            state.isLoading = true;
-        })
-        builder.addCase(updateMovie.fulfilled, (state, action) => {
-            const index = state.data.findIndex(movie => movie.id === action.payload.id);
-            if (index !== -1) {
-                state.data[index] = action.payload;
-            }
-        });  
-        builder.addCase(updateMovie.rejected, (state, action) => {
-            state.isLoading = false;
-            state.error = action.payload;
-        });
-        builder.addCase(fetchMovieDetails.fulfilled, (state, action) => {
-            state.isLoading = false;
-            state.movie = action.payload;  
-        });
-        
+        builder
+            .addCase(fetchMovieList.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(fetchMovieList.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.data = action.payload;
+            })
+            .addCase(fetchMovieList.rejected, (state) => {
+                state.error = true;
+            })
+            .addCase(deleteMovie.fulfilled, (state, action) => {
+                state.data = state.data.filter((movie) => movie.id !== action.payload);
+            })
+            .addCase(updateMovie.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(updateMovie.fulfilled, (state, action) => {
+                const index = state.data.findIndex((movie) => movie.id === action.payload.id);
+                if (index !== -1) {
+                    state.data[index] = action.payload;
+                }
+            })
+            .addCase(updateMovie.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.payload;
+            })
+            .addCase(fetchMovieDetails.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.movie = action.payload;
+            });
     }
-})
+});
 
 export const { addMovie } = movieSlice.actions;
 export default movieSlice.reducer;

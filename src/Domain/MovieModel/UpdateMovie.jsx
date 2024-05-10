@@ -1,82 +1,72 @@
-import React, { useState, useId } from "react";
+import React, { useState, useEffect } from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { MovieData } from "./MovieData";
 import { useNavigate } from "react-router-dom";
 import {Form, Button} from "react-bootstrap"
-import { fetchMovieList } from "../redux/movieSlicer";
-import { useDispatch } from "react-redux";
+import { useParams } from "react-router-dom";
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchMovieDetails, updateMovie, fetchMovieList } from '../../redux/movieSlicer';
 
 
-function Add() {
+
+function UpdateMovie(){
 
     const [title, setTitle] = useState("");
     const [genre, setGenre] = useState("");
-    const [year_of_release, setYear] = useState("");
-    const [trailer_link, setTrailer] = useState("");
+    const [yearOfRelease, setYear] = useState("");
+    const [trailerLink, setTrailer] = useState("");
     const [photo, setPhoto] = useState("");
-    const [userID, setUserID] = useState("");
- 
+    const [userId, setUserId] = useState("");
+    const { movieId } = useParams(); 
+    let navigate = useNavigate();
 
     const dispatch = useDispatch();
-    let history = useNavigate();
+    const { movie, isLoading, error } = useSelector(state => state.movieStore);
 
-    const handleSubmit = async (e) => {
+    useEffect(() => {
+        dispatch(fetchMovieDetails(movieId));
+    }, [dispatch, movieId]);
+
+
+    useEffect(() => {
+        if (movie) {
+            setTitle(movie.title);
+            setGenre(movie.genre);
+            setYear(movie.yearOfRelease);
+            setTrailer(movie.trailerLink);
+            setPhoto(movie.photo);
+            setUserId(movie.userId);
+        }
+    }, [movie]);
+    
+    const handleSubmit = (e) => {
         e.preventDefault();
-
-        const id_date = Date.now().toString();
-
-        
-        const movie = {
-            id: id_date,
-            title: title,
-            genre: genre,
-            yearOfRelease: year_of_release, 
-            trailerLink: trailer_link,       
-            photo: photo,
-            userID: userID 
+        const updatedMovie = {
+            title,
+            genre,
+            yearOfRelease,
+            trailerLink,
+            photo,
+            userId,
         };
         
-        if (!title || !genre || !year_of_release || !trailer_link || !photo || !userID) {
-            alert("INVALID INPUT!");
-            return;
-        }
-    
-        try {
-            const response = await fetch('http://localhost:8080/movie', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(movie),
-            });
-    
-            if (!response.ok) {
-                throw new Error(`Error: ${response.status}`);
-            }
-
-            setTitle("");
-            setGenre("");
-            setYear("");
-            setTrailer("");
-            setPhoto("");
-            setUserID("");
-            
+        dispatch(updateMovie({ movieId, updatedMovie }))
+        .then(() => {
             dispatch(fetchMovieList());
-
-            history('/');
-        } catch (error) {
-            console.log(error);
-            alert("Failed to add the movie");
-        }
-    }
+        })
+        .catch(error => {
+            console.error("Failed to update the movie:", error);
+        });
+        navigate("/home");
+    };
     
+
     return (
         <div>
              <Form className="d-grid gap-2" style={{ margin: "15rem" }}>
                 <Form.Group className="mb-3" controlId="formTitle">
                     <Form.Control
                         type="text"
-                        placeholder="Enter Title"
+                        value={title}
                         required
                         onChange={(e) => setTitle(e.target.value)}
                     />
@@ -85,7 +75,7 @@ function Add() {
                 <Form.Group className="mb-3" controlId="formGenre">
                     <Form.Control
                         type="text"
-                        placeholder="Enter Genre"
+                        value={genre}
                         required
                         onChange={(e) => setGenre(e.target.value)}
                     />
@@ -94,7 +84,7 @@ function Add() {
                 <Form.Group className="mb-3" controlId="formYearOfRelease">
                     <Form.Control
                         type="text"
-                        placeholder="Enter Year of Release"
+                        value={yearOfRelease}
                         required
                         onChange={(e) => setYear(e.target.value)}
                     />
@@ -103,7 +93,7 @@ function Add() {
                 <Form.Group className="mb-3" controlId="formTrailerLink">
                     <Form.Control
                         type="text"
-                        placeholder="Enter Trailer Link"
+                        value={trailerLink}
                         required
                         onChange={(e) => setTrailer(e.target.value)}
                     />
@@ -112,33 +102,33 @@ function Add() {
                 <Form.Group className="mb-3" controlId="formPhoto">
                     <Form.Control
                         type="text"
-                        placeholder="Enter Photo URL"
+                        value={photo}
                         required
                         onChange={(e) => setPhoto(e.target.value)}
                     />
                 </Form.Group>
 
-                <Form.Group className="mb-3" controlId="formUserID">
+                <Form.Group className="mb-3" controlId="formUserId">
                     <Form.Control
                         type="text"
-                        placeholder="Enter User ID"
+                        value={userId}
                         required
-                        onChange={(e) => setUserID(e.target.value)}
+                        onChange={(e) => setUserId(e.target.value)}
                     />
                 </Form.Group>
-                
 
                 <Button
 					onClick={(e) => handleSubmit(e)}
 					variant="primary"
 					type="submit"
 				>
-					Submit
+					Update
 				</Button>
 
             </Form>
         </div>
     )
+
 }
 
-export default Add;
+export default UpdateMovie;

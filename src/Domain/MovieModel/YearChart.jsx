@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from "react";
-import './Home.css';
-import {Chart as ChartJS } from "chart.js/auto";
-import {Bar, Doughnut, Line} from "react-chartjs-2";
+import React, { useEffect } from "react";
+import '../Home.css';
+import { Bar } from "react-chartjs-2";
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchMovieList, deleteMovie } from "../redux/movieSlicer";
+import { fetchMovieList } from "../../redux/movieSlicer";
+
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const YearChart = () => {
 
