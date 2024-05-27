@@ -13,28 +13,28 @@ function Home() {
     const [moviesPerPage, setMoviesPerPage] = useState(5);
     const [sortOrder, setSortOrder] = useState('asc');
     const [username, setUsername] = useState('-');
+    const [roles, setRoles] = useState([]);
     let navigate = useNavigate();
 
     const dispatch = useDispatch();
     const { data: movies, isLoading, error } = useSelector(state => state.movieStore);
 
     useEffect(() => {
-        if (!movies) {
-            dispatch(fetchMovieList());
-        }
+        dispatch(fetchMovieList());
         
         const token = localStorage.getItem('jwtToken');
         if (token) {
             try {
                 const decoded = jwtDecode(token);
                 setUsername(decoded.name);
+                setRoles(decoded.roles ? decoded.roles.split(' ') : []);
 
             } catch (error) {
                 console.error("Failed to decode the token:", error);
             }
         }
 
-    }, [dispatch, movies]);
+    }, [dispatch]);
 
     const toggleSortOrder = () => {
         setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
@@ -58,6 +58,10 @@ function Home() {
     const handleSignOut = () => {
         localStorage.removeItem('jwtToken');  
         navigate('/');
+    };
+
+    const hasRole = (role) => {
+        return roles.includes(role);
     };
 
     return (
@@ -87,25 +91,31 @@ function Home() {
                         {sortedAndPagedMovies.map((movie) => (
                             <tr key={movie.id}>
                                 <td><Link to={`/movie/${movie.id}`}>{movie.title}</Link></td>
-                                <td>
-                                    <Link to={`/update/${movie.id}`}>
-                                        <Button variant="info">Update</Button>
-                                    </Link>
-                                </td>
-                                <td>
-                                    <Button onClick={() => handleDelete(movie.id)} variant="danger">
-                                        Delete
-                                    </Button>
-                                </td>
+                                {hasRole('ROLE_MANAGER') || hasRole('ROLE_ADMIN') ? (
+                                    <td>
+                                        <Link to={`/update/${movie.id}`}>
+                                            <Button variant="info">Update</Button>
+                                        </Link>
+                                    </td>
+                                ) : null}
+                                {hasRole('ROLE_MANAGER') || hasRole('ROLE_ADMIN') ? (
+                                    <td>
+                                        <Button onClick={() => handleDelete(movie.id)} variant="danger">
+                                            Delete
+                                        </Button>
+                                    </td>
+                                ) : null}
                             </tr>
                         ))}
                     </tbody>
                 </table>
             </div>
             <div className="home-buttons">
-                <Link to="/create">
-                    <button className="home-page-button" style={{ fontSize: '24px' }}>Create</button>
-                </Link>
+                {hasRole('ROLE_MANAGER') || hasRole('ROLE_ADMIN') ? (
+                    <Link to="/create">
+                        <button className="home-page-button" style={{ fontSize: '24px' }}>Create</button>
+                    </Link>
+                ) : null}
                 <Button className="home-page-button" onClick={toggleSortOrder} variant="primary">Sort</Button>
                 <Link to="/userPage">
                     <button className="home-page-button" style={{ fontSize: '24px' }}>User page</button>

@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import './login.css';
 import Button from 'react-bootstrap/Button';
+import BASE_URL from '../config';
 
 const Login = (props) => {
   const [email, setEmail] = useState('')
@@ -14,7 +15,7 @@ const Login = (props) => {
   const onLoginButtonClick = async () => { 
     try {
 
-      const response = await fetch('http://localhost:8080/api/login', {
+      const response = await fetch(`${BASE_URL}/api/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

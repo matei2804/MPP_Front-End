@@ -68,16 +68,6 @@ function UpdateUser() {
                     />
                 </Form.Group>
 
-                {/* <Form.Group className="mb-3" controlId="formLastPassword">
-                    <Form.Label>Last Password</Form.Label>
-                    <Form.Control
-                        type="password"
-                        value={lastPassword}
-                        required
-                        onChange={(e) => setLastPassword(e.target.value)}
-                    />
-                </Form.Group> */}
-
                 <Form.Group className="mb-3" controlId="formPassword">
                     <Form.Label>Password</Form.Label>
                     <Form.Control

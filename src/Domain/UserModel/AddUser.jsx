@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Form, Button } from "react-bootstrap";
 import { useDispatch } from "react-redux";
 import { fetchUserList } from "../../redux/userSlicer";
+import BASE_URL from "../../config";
 
 function AddUser() {
     const [name, setName] = useState("");
@@ -16,7 +17,7 @@ function AddUser() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!name || !email) {
+        if (!name || !email || !password) {
             alert("Please fill out all fields.");
             return;
         }
@@ -27,20 +28,21 @@ function AddUser() {
             email: email,
             password: password
         };
+
         try {
-            const response = await fetch('http://localhost:8080/user', {
+            const response = await fetch(`${BASE_URL}/user`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(user),
             });
-    
+
             if (!response.ok) {
                 throw new Error(`Error: ${response.status}`);
             }
-            
-            dispatch(fetchUserList);
+
+            dispatch(fetchUserList());
 
             setName("");
             setEmail("");

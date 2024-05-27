@@ -1,11 +1,12 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import BASE_URL from "../config";
 
 const getToken = () => localStorage.getItem('jwtToken');
 
 export const fetchMovieList = createAsyncThunk('fetchMovieList', async (_, { rejectWithValue }) => {
     const token = getToken(); 
     try {
-        const response = await fetch('http://localhost:8080/movieList', {
+        const response = await fetch(`${BASE_URL}/movieList`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -21,7 +22,7 @@ export const fetchMovieList = createAsyncThunk('fetchMovieList', async (_, { rej
 export const deleteMovie = createAsyncThunk('movie/deleteMovie', async (movieId, { rejectWithValue }) => {
     const token = getToken();
     try {
-        const response = await fetch(`http://localhost:8080/movie/${movieId}`, {
+        const response = await fetch(`${BASE_URL}/movie/${movieId}`, {
             method: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -38,7 +39,7 @@ export const deleteMovie = createAsyncThunk('movie/deleteMovie', async (movieId,
 export const fetchMovieDetails = createAsyncThunk('fetchMovieDetails', async (movieId, { rejectWithValue }) => {
     const token = getToken();
     try {
-        const response = await fetch(`http://localhost:8080/movie?id=${movieId}`, {
+        const response = await fetch(`${BASE_URL}/movie?id=${movieId}`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -54,7 +55,7 @@ export const fetchMovieDetails = createAsyncThunk('fetchMovieDetails', async (mo
 export const updateMovie = createAsyncThunk('movie/updateMovie', async ({ movieId, updatedMovie }, { rejectWithValue }) => {
     const token = getToken();
     try {
-        const response = await fetch(`http://localhost:8080/movie/${movieId}`, {
+        const response = await fetch(`${BASE_URL}/movie/${movieId}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

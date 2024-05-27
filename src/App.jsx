@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import './App.css'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import {Home} from './Domain/Home';
+import { Home } from './Domain/Home';
 import MovieDetail from './Domain/MovieModel/MovieDetail';
 import AddMovie from './Domain/MovieModel/AddMovie';
 import UpdateMovie from './Domain/MovieModel/UpdateMovie';
@@ -13,6 +13,7 @@ import UserPage from './Domain/UserModel/UserPage';
 import AddUser from './Domain/UserModel/AddUser';
 import UpdateUser from './Domain/UserModel/UpdateUser';
 import Login from './login/login';
+import UpdateRoleUser from './Domain/UserModel/UpdateRoleUser';
 
 
 
@@ -39,6 +40,7 @@ function App() {
             <Route path="/userPage" element={<UserPage />} />
             <Route path="/addUser" element={<AddUser />} />
             <Route path="/updateUser/:userId" element={<UpdateUser />} />
+            <Route path="/updateUserRole/:userId" element={<UpdateRoleUser />} />
           </Routes>
       </Router>
     </Provider> 

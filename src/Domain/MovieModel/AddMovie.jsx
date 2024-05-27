@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import {Form, Button} from "react-bootstrap"
 import { fetchMovieList } from "../../redux/movieSlicer";
 import { useDispatch } from "react-redux";
+import BASE_URL from "../../config";
 
 
 function AddMovie() {
@@ -14,7 +15,7 @@ function AddMovie() {
     const [trailer_link, setTrailer] = useState("");
     const [photo, setPhoto] = useState("");
     const [userId, setUserId] = useState("");
- 
+    const getToken = () => localStorage.getItem('jwtToken');
 
     const dispatch = useDispatch();
     let history = useNavigate();
@@ -24,7 +25,7 @@ function AddMovie() {
 
         const id_date = Date.now().toString();
 
-        
+        const token = getToken();
         const movie = {
             id: id_date,
             title: title,
@@ -41,10 +42,11 @@ function AddMovie() {
         }
     
         try {
-            const response = await fetch('http://localhost:8080/movie', {
+            const response = await fetch(`${BASE_URL}/movie`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify(movie),
             });
